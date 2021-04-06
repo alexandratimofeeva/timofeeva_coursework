@@ -1,0 +1,39 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #include "standcl.h"\
+\
+#include "before_procession.h"\
+\
+//\uc0\u1091 \u1076 \u1072 \u1083 \u1077 \u1085 \u1080 \u1077  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1081 , \u1089 \u1086 \u1076 \u1077 \u1088 \u1078 \u1072 \u1097 \u1080 \u1081  # or \u8470 , \u1085 \u1086  \u1085 \u1077  \u1089 \u1086 \u1076 \u1077 \u1088 \u1078 \u1072 \u1097 \u1080 \u1093  \u1094 \u1080 \u1092 \u1088 \u1099 \
+void DELETEWITHSYMBNONUMB(text_s *text)\{\
+    int k;\
+    int check_dig = 0; //\uc0\u1087 \u1088 \u1086 \u1074 \u1077 \u1088 \u1082 \u1072  \u1085 \u1072  \u1085 \u1072 \u1083 \u1080 \u1095 \u1080 \u1077  \u1094 \u1080 \u1092 \u1088 \
+    int check_symb = 0; //\uc0\u1087 \u1088 \u1086 \u1074 \u1077 \u1088 \u1082 \u1072  \u1085 \u1072  \u1085 \u1072 \u1083 \u1080 \u1095 \u1080 \u1077  \u1091 \u1082 \u1072 \u1079 \u1072 \u1085 \u1085 \u1099 \u1093  \u1089 \u1080 \u1084 \u1074 \u1086 \u1083 \u1086 \u1074 \
+    long int str_now = 0; //\uc0\u1085 \u1086 \u1084 \u1077 \u1088  \u1089 \u1090 \u1088 \u1086 \u1082 \u1080  \u1089 \u1077 \u1081 \u1095 \u1072 \u1089 \
+    while(str_now != text->quant)\{\
+        check_symb = wcscspn(text->sent[str_now].str, L"#\uc0\u8470 ");\
+        check_dig = wcscspn(text->sent[str_now].str, L"1234567890");\
+        /*iswidigit \uc0\u1080 \u1085 \u1086 \u1075 \u1076 \u1072  \u1086 \u1090 \u1088 \u1072 \u1073 \u1072 \u1090 \u1099 \u1074 \u1072 \u1077 \u1090  \u1085 \u1077 \u1082 \u1086 \u1088 \u1088 \u1077 \u1082 \u1090 \u1085 \u1086 . \u1057 \u1083 \u1091 \u1095 \u1072 \u1081  \u1089  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1077 \u1084  - \u1089 \u1080 \u1084 \u1074 \u1083 \u1086 \u1083 \u1086 \u1084 /\u1094 \u1080 \u1092 \u1088 \u1086 \u1081 \
+        \uc0\u1085 \u1077 \u1074 \u1086 \u1079 \u1084 \u1086 \u1078 \u1077 \u1085  \u1080 \u1079 -\u1079 \u1072  \u1090 \u1086 \u1095 \u1082 \u1080 */\
+\
+        if ((check_symb != wcslen(text->sent[str_now].str)) && (check_dig == wcslen(text->sent[str_now].str)))\{\
+            for (k = str_now; k < text->quant - 1; k++)\{\
+                text->sent[k].str = (wchar_t *)realloc(text->sent[k].str, (wcslen(text->sent[k + 1].str) + 1) * sizeof(wchar_t));\
+                wmemcpy(text->sent[k].str, text->sent[k + 1].str, wcslen(text->sent[k + 1].str) + 1);\
+            \}\
+            free(text->sent[text->quant - 1].str);\
+            text->sent[text->quant - 1].str = NULL;\
+            text->quant--;\
+            recount_length(text);\
+        \} else\
+            str_now++; //\uc0\u1095 \u1090 \u1086 \u1073 \u1099  \u1087 \u1088 \u1086 \u1074 \u1077 \u1088 \u1103 \u1090 \u1100  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1103  \u1087 \u1086 \u1076 \u1088 \u1103 \u1076  \u1074  \u1089 \u1083 \u1091 \u1095 \u1072 \u1077  \u1091 \u1076 \u1072 \u1083 \u1077 \u1085 \u1080 \u1103 \
+        check_dig = 0;\
+        check_symb = 0;\
+    \}\
+\}\
+}

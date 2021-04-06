@@ -1,0 +1,96 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #include "standcl.h"\
+\
+#ifndef MAKE_BIG\
+#define MAKE_BIG 10 //\uc0\u1076 \u1083 \u1103  \u1091 \u1074 \u1077 \u1083 \u1080 \u1095 \u1077 \u1085 \u1080 \u1077  \u1088 \u1072 \u1079 \u1084 \u1077 \u1088 \u1072  \u1080  \u1090 .\u1087 .\
+#endif\
+\
+//\uc0\u1074 \u1086 \u1074 \u1079 \u1088 \u1072 \u1097 \u1072 \u1077 \u1090  \u1082 \u1086 \u1083 -\u1074 \u1086  \u1089 \u1080 \u1084 \u1074 \u1086 \u1083 \u1086 \u1074  \u1074  \u1089 \u1090 \u1088 \u1086 \u1082 \u1077 \
+int VERNUTSYMBSTR(wchar_t **str)\{\
+    int avl_sy = MAKE_BIG; //\uc0\u1076 \u1086 \u1089 \u1090 \u1091 \u1087 \u1085 \u1086 \u1077  \u1082 \u1086 \u1083 -\u1074 \u1086  \u1089 \u1080 \u1084 \u1074 \u1086 \u1083 \u1086 \u1074 \
+    int symb = 0; //\uc0\u1090 \u1077 \u1082 \u1091 \u1097 \u1077 \u1077  \u1082 \u1086 \u1083 -\u1074 \u1086  \u1089 \u1080 \u1084 \u1074 \u1086 \u1083 \u1086 \u1074 \
+    *str = (wchar_t *)malloc(avl_sy * sizeof(wchar_t));\
+    if (!str)\
+        return 1;\
+    wchar_t input = '.'; //\uc0\u1087 \u1077 \u1088 \u1077 \u1084 \u1077 \u1085 \u1085 \u1072 \u1103  \u1076 \u1083 \u1103  \u1087 \u1086 \u1089 \u1080 \u1084 \u1074 \u1086 \u1083 \u1100 \u1085 \u1086 \u1075 \u1086  \u1074 \u1074 \u1086 \u1076 \u1072 \
+    while (input != L'\\n')\{\
+        wscanf(L"%lc", &input);\
+        if (input == L'\\n')\
+            break;\
+        if (avl_sy <= symb)\{\
+            avl_sy += MAKE_BIG;\
+            void *tmp = realloc(*str, avl_sy * sizeof(wchar_t));\
+            if (!tmp)\
+                return 1;\
+            *str = (wchar_t *)tmp;\
+        \}\
+        (*str)[symb] = input;\
+        symb++;\
+    \}\
+    (*str)[symb] = L'\\0';\
+    return 0;\
+\}\
+\
+int MAKEARRAYPLEASE(wchar_t *temp, text_s *text)\{\
+    text->quant = 0; //\uc0\u1090 \u1077 \u1082 \u1091 \u1097 \u1077 \u1077  \u1082 \u1086 \u1083 -\u1074 \u1086  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1081 \
+    long int avl_sent = MAKE_BIG; //\uc0\u1076 \u1086 \u1089 \u1090 \u1091 \u1087 \u1085 \u1086 \u1077  \u1082 \u1086 \u1083 -\u1074 \u1086  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1081 \
+    text->sent = (sentense_s *)malloc(avl_sent * sizeof(sentense_s)); //\uc0\u1074 \u1099 \u1076 \u1077 \u1083 \u1077 \u1085 \u1080 \u1077  \u1087 \u1072 \u1084 \u1103 \u1090 \u1080  \u1076 \u1083 \u1103  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1103 \
+    if (!text->sent)\
+        return 1;\
+    wchar_t *token = NULL;\
+    wchar_t *buffer = NULL;\
+    token = wcstok(temp, L".", &buffer);\
+    while (token != NULL)\{\
+        if (avl_sent <= text->quant)\{\
+            avl_sent += MAKE_BIG;\
+            void *tmp = realloc(text->sent, avl_sent * sizeof(sentense_s));\
+            if (!tmp)\
+                return 1;\
+            text->sent = (sentense_s *)tmp;\
+        \}\
+        text->sent[text->quant].str = (wchar_t *)malloc( (wcslen(token) + 2) * sizeof(wchar_t)); //+1 \uc0\u1090 .\u1082 . wclen \u1085 \u1077  \u1091 \u1095 \u1080 \u1090 \u1099 \u1074 \u1072 \u1077 \u1090  \\0\
+        if (!text->sent[text->quant].str)\
+            return 1;\
+        wmemcpy(text->sent[text->quant].str, token, wcslen(token) + 1); //\uc0\u1087 \u1077 \u1088 \u1077 \u1085 \u1086 \u1089 \u1080 \u1084  \u1092 \u1088 \u1072 \u1075 \u1084 \u1077 \u1085 \u1090  \u1087 \u1072 \u1084 \u1103 \u1090 \u1080  token \u1074  \u1089 \u1090 \u1088 \u1091 \u1082 \u1090 \u1091 \u1088 \u1091 \
+        text->quant++;\
+        token = wcstok(NULL, L".", &buffer);\
+    \}\
+    token = NULL;\
+    buffer = NULL;\
+    return 0;\
+\}\
+\
+//\uc0\u1091 \u1076 \u1072 \u1083 \u1077 \u1085 \u1080 \u1077  \u1087 \u1088 \u1086 \u1073 \u1077 \u1083 \u1086 \u1074  \u1074  \u1085 \u1072 \u1095 \u1072 \u1083 \u1077  \u1087 \u1088 \u1077 \u1076 \u1083 \u1086 \u1078 \u1077 \u1085 \u1080 \u1081 , \u1087 \u1086 \u1103 \u1074 \u1080 \u1074 \u1096 \u1080 \u1093 \u1089 \u1103  \u1080 \u1079 -\u1079 \u1072  wcstok. \u1058 \u1072 \u1082 \u1078 \u1077  \u1076 \u1086 \u1073 \u1072 \u1074 \u1083 \u1077 \u1085 \u1080 \u1077  \u1074  \u1085 \u1080 \u1093  \u1090 \u1086 \u1095 \u1077 \u1082 .\
+int DELETESPACES(text_s *text)\{\
+    int c_tabs = 0; //\uc0\u1082 \u1086 \u1083 -\u1074 \u1086  \u1087 \u1088 \u1086 \u1073 \u1077 \u1083 \u1086 \u1074  \u1074  \u1085 \u1072 \u1095 \u1072 \u1083 \u1077  \u1076 \u1083 \u1103  \u1091 \u1076 \u1072 \u1083 \u1077 \u1085 \u1080 \u1103 \
+    int i, j;\
+    int now_len = 0;\
+    for (i = 0; i < text->quant; i++)\{\
+        now_len = wcslen(text->sent[i].str);\
+\
+        while (text->sent[i].str[c_tabs] == L' ')\
+            c_tabs++;\
+\
+        for (j = 0; j < wcslen(text->sent[i].str); j++)\
+            text->sent[i].str[j] = text->sent[i].str[j + c_tabs];\
+\
+        if (c_tabs == 0)\{\
+            void *tmp = realloc(text->sent[i].str, (now_len + 2) * sizeof(wchar_t)); //+1 \uc0\u1076 \u1083 \u1103  \u1090 \u1086 \u1095 \u1082 \u1080 \
+            if (!tmp)\
+                return 1;\
+            text->sent[i].str = (wchar_t *)tmp;\
+        \}\
+        text->sent[i].str[now_len - c_tabs] = L'.'; //\uc0\u1085 \u1072  \u1084 \u1077 \u1089 \u1090 \u1086  \u1090 \u1077 \u1088 \u1084 \u1080 \u1085 \u1072 \u1083 \u1100 \u1085 \u1086 \u1075 \u1086  0 \u1087 \u1080 \u1096 \u1077 \u1084  \u1090 \u1086 \u1095 \u1082 \u1091 \
+        text->sent[i].str[now_len - c_tabs + 1] = L'\\0'; //\uc0\u1087 \u1086 \u1089 \u1083 \u1077  \u1087 \u1080 \u1096 \u1077 \u1084  \u1090 \u1077 \u1088 \u1084 \u1080 \u1085 \u1072 \u1083 \u1100 \u1085 \u1099 \u1081  0\
+        text->sent[i].length = wcslen(text->sent[i].str);\
+        c_tabs = 0;\
+    \}\
+    return 0;\
+\}\
+}

@@ -1,0 +1,117 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #include "standcl.h"\
+#include <time.h>\
+#include "changedate.h"\
+#include "exceptional_clean.h"\
+\
+int changedate(text_s *text, int numb_of_str, int beg_of_word, int length_month, int numb_offset, int numb_of_word, int ln, int check)\{\
+    const int length_start = numb_offset + length_month + 2; //\uc0\u1076 \u1083 \u1080 \u1085 \u1072  \u1080 \u1079 \u1085 \u1072 \u1095 \u1072 \u1083 \u1100 \u1085 \u1086 \u1081  \u1087 \u1086 \u1076 \u1089 \u1090 \u1088 \u1086 \u1082 \u1080 -\u1076 \u1072 \u1090 \u1099 ; +2 - \u1101 \u1090 \u1086  \u1087 \u1088 \u1086 \u1073 \u1077 \u1083  \u1080  \u1075 .\
+    wchar_t *temp = malloc(50 * sizeof(wchar_t));\
+    if (ln == 1)\
+        wmemcpy(temp, &text->sent[numb_of_str].str[beg_of_word], length_start);\
+    else\
+        wmemcpy(temp, &text->sent[numb_of_str].str[beg_of_word - 1], length_start);\
+    temp[length_start] = L'\\0';\
+    struct tm new_time;\
+    new_time.tm_sec = 0;\
+    new_time.tm_min = 0;\
+    new_time.tm_hour = 0;\
+    new_time.tm_isdst = 0;\
+    wchar_t *month = malloc((length_month + 1) * sizeof(wchar_t));\
+    swscanf(temp, L"%i %ls %i", &new_time.tm_mday, month, &new_time.tm_year);\
+    new_time.tm_year -= 1900;\
+    new_time.tm_mon = MONTH(month);\
+    wchar_t *date_out = (wchar_t *)malloc(12 * sizeof(wchar_t));\
+    wcsftime(date_out, 12, L"%e/%m/%Y", &new_time);\
+\
+    if(check) //\uc0\u1077 \u1089 \u1083 \u1080  \u1074  \u1087 \u1088 \u1077 \u1076 \u1099 \u1076 \u1091 \u1097 \u1077 \u1081  \u1076 \u1072 \u1090 \u1077  \u1085 \u1077  \u1086 \u1076 \u1085 \u1086 \u1079 \u1085 \u1072 \u1095 \u1085 \u1086 \u1077  \u1095 \u1080 \u1089 \u1083 \u1086  \u1080  \u1085 \u1077  \u1073 \u1091 \u1082 \u1074 \u1099  \u1086 \u1073 \u1088 .\
+        beg_of_word--;\
+\
+    int i;\
+    //\uc0\u1079 \u1072 \u1087 \u1080 \u1089 \u1100  \u1076 \u1072 \u1090 \u1099  \u1085 \u1086 \u1074 \u1086 \u1075 \u1086  \u1092 \u1086 \u1088 \u1084 \u1072 \u1090 \u1072  \u1074  \u1089 \u1090 \u1088 \u1086 \u1082 \u1091 \
+    for (i = 0; i < wcslen(date_out); i++)\{\
+        text->sent[numb_of_str].str[beg_of_word++] = date_out[i];\
+    \}\
+\
+    //\uc0\u1089 \u1084 \u1077 \u1097 \u1077 \u1085 \u1080 \u1077  \u1089 \u1090 \u1088 \u1086 \u1082 \u1080  \u1076 \u1083 \u1103  \u1085 \u1086 \u1074 \u1086 \u1081  \u1076 \u1072 \u1090 \u1099 \
+    int diff = length_month;\
+    for (beg_of_word; beg_of_word < text->sent[numb_of_str].length; beg_of_word++)\{\
+        text->sent[numb_of_str].str[beg_of_word] = text->sent[numb_of_str].str[beg_of_word + diff];\
+    \}\
+\
+    text->sent[numb_of_str].length = wcslen(text->sent[numb_of_str].str);\
+\
+    //\uc0\u1080 \u1079 \u1084 \u1077 \u1085 \u1077 \u1085 \u1080 \u1077  \u1084 \u1072 \u1089 \u1089 \u1080 \u1074 \u1072  \u1089 \u1083 \u1086 \u1074  \u1082  \u1074 \u1080 \u1076 \u1091  \u1089  \u1085 \u1086 \u1074 \u1086 \u1081  \u1076 \u1072 \u1090 \u1086 \u1081 \
+    text->sent[numb_of_str].splword[numb_of_word] = date_out;\
+    for (i = numb_of_word + 1; i <= text->sent[numb_of_str].count_words - 3; i++)\{\
+        text->sent[numb_of_str].splword[i] = text->sent[numb_of_str].splword[i + 3];\
+    \}\
+    //\uc0\u1086 \u1095 \u1080 \u1089 \u1090 \u1082 \u1072 \
+    for (i = text->sent[numb_of_str].count_words; i > text->sent[numb_of_str].count_words - 3; i--)\{\
+        //free \uc0\u1076 \u1077 \u1083 \u1072 \u1090 \u1100  \u1085 \u1077 \u1083 \u1100 \u1079 \u1103 , \u1090 .\u1082 . \u1087 \u1088 \u1086 \u1089 \u1090 \u1086  \u1087 \u1077 \u1088 \u1077 \u1074 \u1077 \u1096 \u1080 \u1074 \u1072 \u1077 \u1084  \u1091 \u1082 \u1072 \u1079 \u1072 \u1090 \u1077 \u1083 \u1080 ;\
+        text->sent[numb_of_str].splword[i] = NULL;\
+    \}\
+    text->sent[numb_of_str].count_words -= 3;\
+    free(date_out);\
+    date_out = NULL;\
+    free(temp);\
+    temp = NULL;\
+    return 0;\
+\}\
+\
+void FINDINGDATE(text_s *text)\{\
+    int i, j;\
+    int length_month = 0; //\uc0\u1076 \u1083 \u1080 \u1085 \u1072  \u1084 \u1077 \u1089 \u1103 \u1094 \u1072  \u1074  \u1085 \u1072 \u1081 \u1076 \u1077 \u1085 \u1085 \u1086 \u1081  \u1089 \u1090 \u1088 \u1086 \u1082 \u1077  \u1076 \u1072 \u1090 \u1099 \
+    long int pos = 0; //\uc0\u1087 \u1086 \u1079 \u1080 \u1094 \u1080 \u1103  \u1085 \u1072 \u1095 \u1072 \u1083 \u1072  \u1087 \u1086 \u1076 \u1089 \u1090 \u1088 \u1086 \u1082 \u1080 -\u1076 \u1072 \u1090 \u1099  \u1074  \u1089 \u1090 \u1088 \u1086 \u1082 \u1077 \
+    int now_words = 0; //\uc0\u1090 \u1077 \u1082 \u1091 \u1097 \u1077 \u1077  \u1095 \u1080 \u1089 \u1083 \u1086  \u1087 \u1088 \u1086 \u1081 \u1076 \u1077 \u1085 \u1085 \u1099 \u1093  \u1089 \u1083 \u1086 \u1074 \
+    int numb_offset = 0;\
+    int old_ln = 0, temp_ln, old_y = 4, temp_y = 4;\
+    int func_call = 1, check = 1, check_func_alr = 0;\
+    wchar_t *months = (wchar_t *)malloc(200 * sizeof(wchar_t));\
+    months = L"\uc0\u1103 \u1085 \u1074 \u1072 \u1088 \u1103  \u1092 \u1077 \u1074 \u1088 \u1072 \u1083 \u1103  \u1084 \u1072 \u1088 \u1090 \u1072  \u1072 \u1087 \u1088 \u1077 \u1083 \u1103  \u1084 \u1072 \u1103  \u1080 \u1102 \u1085 \u1103  \u1080 \u1102 \u1083 \u1103  \u1072 \u1074 \u1075 \u1091 \u1089 \u1090 \u1072  \u1089 \u1077 \u1085 \u1090 \u1103 \u1073 \u1088 \u1103  \u1086 \u1082 \u1090 \u1103 \u1073 \u1088 \u1103  \u1085 \u1086 \u1103 \u1073 \u1088 \u1103  \u1076 \u1077 \u1082 \u1072 \u1073 \u1088 \u1103  january february march april may june july august september october november december\\0";\
+    for (i = 0; i < text->quant; i++)\{ //\uc0\u1080 \u1076 \u1105 \u1084  \u1087 \u1086  \u1089 \u1090 \u1088 \u1086 \u1082 \u1072 \u1084 \
+        while(now_words < text->sent[i].count_words - 3)\{ //\uc0\u1080 \u1076 \u1105 \u1084  \u1087 \u1086  \u1089 \u1083 \u1086 \u1074 \u1072 \u1084 \
+            pos += wcslen(text->sent[i].splword[now_words]);\
+            //\uc0\u1087 \u1088 \u1086 \u1074 \u1077 \u1088 \u1103 \u1077 \u1084  \u1082 \u1086 \u1088 \u1088 \u1077 \u1082 \u1090 \u1085 \u1086 \u1089 \u1090 \u1100  \u1095 \u1080 \u1089 \u1083 \u1072  \u1080  \u1085 \u1072 \u1079 \u1074 \u1072 \u1085 \u1080 \u1103  \u1084 \u1077 \u1089 \u1103 \u1094 \u1072 \
+            //wcstol - converts the initial portion of the wide-character string pointed to by nptr to a long integer value\
+            if ( (wcstol(text->sent[i].splword[now_words], NULL, 10) <= 31) && (wcstol(text->sent[i].splword[now_words], NULL, 10) > 0) && (wcsstr(months, text->sent[i].splword[now_words + 1])) )\{\
+                    length_month = wcslen(text->sent[i].splword[now_words + 1]);\
+                    if ( ( wcstol(text->sent[i].splword[now_words + 2], NULL, 10) > 0) && ( wcslen(text->sent[i].splword[now_words + 3]) == 1 ) && (( text->sent[i].splword[now_words + 3][0] == L'\uc0\u1075 ' ) || (text->sent[i].splword[now_words + 3][0] == L'y')) )\{\
+                        numb_offset += wcslen(text->sent[i].splword[now_words]); //\uc0\u1076 \u1086 \u1073 \u1072 \u1074 \u1080 \u1083 \u1080  \u1076 \u1083 \u1080 \u1085 \u1091  \u1095 \u1080 \u1089 \u1083 \u1072  \u1084 \u1077 \u1089 \u1103 \u1094 \u1072 \
+                        numb_offset += (wcslen(text->sent[i].splword[now_words + 2]) + 2); //\uc0\u1087 \u1088 \u1086 \u1073 \u1077 \u1083 \u1099  \u1089 \u1087 \u1088 \u1072 \u1074 \u1072 /\u1089 \u1083 \u1077 \u1074 \u1072  \u1086 \u1090  \u1084 \u1077 \u1089 \u1103 \u1094 \u1072 \
+                        temp_ln = wcslen(text->sent[i].splword[now_words]);\
+                        temp_y = wcslen(text->sent[i].splword[now_words + 2]);\
+                        if (((func_call == 0) && (check_func_alr == 1)) ||(old_ln == 1) || (old_y < 3) || (temp_y < 3))\{\
+                            check = 0;\
+                        \} else\
+                            check = 1;\
+                        changedate(text, i, pos - 1, length_month, numb_offset, now_words, wcslen(text->sent[i].splword[now_words]), check);\
+                        check_func_alr = 1;\
+                        func_call++;\
+                        pos += numb_offset; //\uc0\u1095 \u1080 \u1089 \u1083 \u1086 +\u1084 \u1077 \u1089 \u1103 \u1094 +\u1075 \u1086 \u1076  \u1074  \u1095 \u1080 \u1089 \u1083 \u1086 \u1074 \u1086 \u1084  \u1074 \u1080 \u1076 \u1077 \
+                        old_ln = temp_ln;\
+                        old_y = temp_y;\
+                        numb_offset = 0;\
+                    \}\
+            \} else\
+                func_call = 0;\
+            pos++; //\uc0\u1087 \u1088 \u1086 \u1073 \u1077 \u1083  \u1084 \u1077 \u1078 \u1076 \u1091  \u1089 \u1083 \u1086 \u1074 \u1072 \u1084 \u1080 \
+            now_words++;\
+        \}\
+        check_func_alr = 0;\
+        func_call = 1;\
+        check = 1;\
+        old_ln = 0;\
+        old_y = 1000;\
+        pos = 0;\
+        now_words = 0;\
+    \}\
+    months = NULL;\
+\}\
+}
